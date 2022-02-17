@@ -73,9 +73,9 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
     char* char_ptr = new char;		// i.e. dynamically allocate a block of memory for one 'char' (from Heap memory),
     // and store its returned address in a pointer p
 
-    //cout << "Output the char that char_ptr points to. It will be a 'random' garbage character: *p = " << *p << endl;
+    //cout << "Output the char that char_ptr points to. It will be a 'random' garbage character: *char_ptr = " << *char_ptr << endl;
 
-    *char_ptr = 'F';	// assign the letter 'F' into the memory location pointed at by pointer p
+    *char_ptr = 'F';	// assign the letter 'F' into the memory location pointed at by pointer char_ptr
 
     cout << "*char_ptr = " << *char_ptr << endl;	// output what char_ptr points at (by de-referencing the pointer)
     // the value stored at the address pointed to by char_ptr should be 'F'
@@ -83,7 +83,7 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
     // now, let's say that we are finished using the dynamically allocated block of memory.
     // We MUST remember to free up that memory by calling 'delete' on the pointer.
 
-    delete char_ptr;   // frees up the memory pointed at by p.  (memory leak occurs if this is not called)
+    delete char_ptr;   // frees up the memory pointed at by char_ptr.  (memory leak occurs if this is not called)
 
     char_ptr = nullptr; // pointers should be set to 'nullptr' after the memory that they point at has been deleted,
     // otherwise, they become what is known as 'Dangling Pointers'
@@ -92,29 +92,30 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
     // that is no longer owned by this program, and that memory may be (or may have
     // been) allocated to another program.
     // If this program accesses memory with a dangling pointer, then it may be accessing
-    // data belonging to another program.!!
+    // data belonging to another program.!! And may corrupt that data.
 
 
     // MEMORY LEAK !!
     // A major problem (source of bugs) is forgetting to delete the dynamically allocated memory.
-    // If we forget to delete the memory,  our program may continue to work happily (for a time).
+    // If we forget to delete the memory, our program may continue to work 'happily' (for a time).
     // No compiler errors or runtime errors will be displayed.
-    // However, every time this demo1() function is called, it is allocated a NEW piece
+    // However, every time this demo1() function is called, it is allocated a NEW block
     // of dynamic memory from the Heap, but that memory is never freed up (released).
-    // So, if demo1() is called enough times, all the memory from the Heap will be allocated
-    // (a byte at a time), all the Heap memory will be exhausted, and our program will crash at that point.
+    // So, if demo1() is called many times, all the memory from the Heap will be allocated
+    // (a byte at a time!), all the Heap memory will be exhausted so there will be no more to give out,
+    // and our program will crash at the next request for memory allocation.
     // This sequence of allocating dynamic memory without freeing it up (using delete) is called a 'memory leakage',
-    // as it seems like the computer's memory is leaking away until there is none left!.
+    // as it seems like the computer's memory is 'leaking away' until there is none left!.
     // An additional problem is that this type of error is extremely difficult to detect, because it
-    // will appear to happen at random.
+    // doesn't have any effect until the point when memory is exhausted and the program crashes.
 
-    // Modern C++ provides Smart Pointers that reduce(eliminate) the chances of memory leaks.
+    // Modern C++ provides Smart Pointers that reduce(eliminate) the chance of memory leaks.
 
 
 //TODO in class:
-//    Allocate dynamic memory to store the time in an unsigned long integer value
-//    Declare and add the address of the memory in a pointer called  pTime ("pointer to time")
-//    Assign the value 1234567890 to the memory block using the de-referenced pointer.
+//    Allocate dynamic memory to store the time (UNIX time) in an unsigned long integer value.
+//    Declare and add the address of the memory in a pointer called  time_ptr ("pointer to time")
+//    Assign the value 1234567890 to the memory block using the (de-referenced) pointer.
 //    Output the time value using the pointer (de-reference it)
 //    Increment the time value by 1 (second) using the pointer.
 //    Output the new value.
@@ -169,19 +170,21 @@ void demo2()  // using the NULL pointer "nullptr"  (Good Practice)
 
 }
 
-void display_using_array_notation(int px[], int size)
+///////// demo3() functions ///////////////////////////////////////////////////////////////////
+
+void display_using_array_notation( int array[], int size )
 {
     cout << "display using array notation:" << endl;
     for (int i = 0; i < size; i++)
-        cout << px[i] << endl;
+        cout << array[i] << endl;
 }
 
-void display_using_pointer_notation(int * px, int size)
+void display_using_pointer_notation( int* array_ptr, int size )
 {
     cout << "display using pointer notation:" << endl;
     for (int i = 0; i < size; i++) {
-        cout << *px << endl;
-        px++;	// increment the pointer (moves in by one elemenet length)
+        cout << *array_ptr << endl;
+        array_ptr++;	// increment the pointer (move on by one element)
     }
 }
 
@@ -201,15 +204,16 @@ void demo3()
     cin >> size;
 
     int* array_ptr = new int[size];	// dynamically allocate array of 'size' ints
+    // 'new' returns the address of the first element of the array.
 
-    // using array notation with the pointer 'array_ptr'
-    // read in elements
+    // using array notation with the pointer 'array_ptr'.
+    // read in elements and populate the array
     for (int i = 0; i < size; i++) {
         cout << "Enter value " << i << ": ";
-        cin >> array_ptr[i];	// assign inputted value to array (array notation)
+        cin >> array_ptr[i];	// assign inputted value to array element (array notation)
     }
 
-    // we can use the access modifier "[]" to treat a pointer as an array
+
     // - using array notation to access the elements
     cout << "Array elements:" << endl;
     for (int i = 0; i < size; i++)
@@ -219,21 +223,20 @@ void demo3()
 
     display_using_pointer_notation(array_ptr, size);
 
-    //TODO
-    // Write and call 2 functions:
-    // increase_using_pointer_notation(array_ptr,size);
-    // increase_using_array_notation(array_ptr, size);
-    // that will increase the value of each element by 2;
-    //
-    // run and test
-
-    //TODO  Finally - we must DELETE (free up) the allocated memory using delete []
+    //Finally - we must DELETE (free up) the allocated memory using delete []
     // Note the "[]" is ESSENTIAL, as - if we leave it out - only the first int in the
     // array will be freed up, which would lead to memory leakage.
 
-    delete [] array_ptr;	// free up the dynamic array of int
-    array_ptr = nullptr;  // set to null to  prevent dangling pointer
+    delete [] array_ptr;	// free up the dynamic array of int, note the "[]"
+    array_ptr = nullptr;    // set to nullptr;  to prevent a dangling pointer
 
     cout << "Leaving demo3() - Memory has been freed up using delete []" << endl;
 }
 
+//TODO
+// Write and call 2 functions:
+// increase_using_pointer_notation(array_ptr,size);
+// increase_using_array_notation(array_ptr, size);
+// that will increase the value of each element by 2;
+//
+// run and test
