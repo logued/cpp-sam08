@@ -1,8 +1,9 @@
-// Dynamic_Memory_Allocation_Basics.cpp				Feb 2022
+// Dynamic_Memory_Allocation_Basics			Feb 2022
 //
 // Demonstrates
 // - using "new" to allocate dynamic memory from the Heap
 // - using "delete" and "delete[]" to free up allocated memory
+// - dynamic allocation of an array of elements
 //
 
 #include <iostream>
@@ -18,8 +19,8 @@ int main()
     cout << "Remember to uncomment calls to demo1() , 2 and 3 etc" << endl;
 
     demo1();
-    // demo2();
-    // demo3();
+    //demo2();
+    //demo3();
 
 }
 
@@ -28,7 +29,7 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
     /**
      When we declare a variable normally - ( e.g.  int x;) - the memory is automatically
      allocated (obtained) for us.  That is to say, the system obtains a piece
-     of memory for us from the Stack, and names it x.
+     of memory for us from the Stack, and associates it with our variable named x.
 
      When a Stack-based variable's life (duration) ends - the memory associated with x is
      'freed up' or given back to the system automatically.	 (Remember our stack frame diagrams!)
@@ -52,7 +53,7 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
      (a pointer that can be assigned the address of the memory block allocated from the Heap)
 
      It is very important to understand DMA, however, it should only be used where
-     absolutely necessary in C++, as it can be the source of 'Memory Leaks' and other bugs in programs.
+     necessary in C++, as it can be the source of 'Memory Leaks' and other bugs in programs.
      A memory leak occurs where a programmer allocates a block of memory, but
      fails to free it up after it is no longer required.
      (i.e. the programmer forgets to write the code to delete the memory block)
@@ -69,22 +70,22 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
 */
     cout << "\ndemo1() - dynamically allocate memory to store a single character (char = 1 byte)" << endl;
 
-    char* p = new char;		// i.e. dynamically allocate a block of memory for one 'char' (from Heap memory),
+    char* char_ptr = new char;		// i.e. dynamically allocate a block of memory for one 'char' (from Heap memory),
     // and store its returned address in a pointer p
 
-    //cout << "Output the char that p points to. It will be a 'random' garbage character: *p = " << *p << endl;
+    //cout << "Output the char that char_ptr points to. It will be a 'random' garbage character: *p = " << *p << endl;
 
-    *p = 'F';	// assign the letter 'F' into the memory location pointed at by pointer p
+    *char_ptr = 'F';	// assign the letter 'F' into the memory location pointed at by pointer p
 
-    cout << "*p = " << *p << endl;	// output what p points at (by de-referencing the pointer)
-    // the value stored at the address pointed to by p should be 'F'
+    cout << "*char_ptr = " << *char_ptr << endl;	// output what char_ptr points at (by de-referencing the pointer)
+    // the value stored at the address pointed to by char_ptr should be 'F'
 
     // now, let's say that we are finished using the dynamically allocated block of memory.
     // We MUST remember to free up that memory by calling 'delete' on the pointer.
 
-    delete p;   // frees up the memory pointed at by p.  (memory leak occurs if this is not called)
+    delete char_ptr;   // frees up the memory pointed at by p.  (memory leak occurs if this is not called)
 
-    p = nullptr; // pointers should be set to 'nullptr' after the memory that they point at has been deleted,
+    char_ptr = nullptr; // pointers should be set to 'nullptr' after the memory that they point at has been deleted,
     // otherwise, they become what is known as 'Dangling Pointers'
     // Dangling Pointers point to memory that has been freed up.
     // Dangling pointers are another major source of errors, as, they point to memory
@@ -199,29 +200,29 @@ void demo3()
     cout << "Enter size for array: (e.g. 3) ";
     cin >> size;
 
-    int* ptr_arr = new int[size];	// dynamically allocate array of 'size' ints
+    int* array_ptr = new int[size];	// dynamically allocate array of 'size' ints
 
-    // using array notation with the pointer ptr_arr
+    // using array notation with the pointer 'array_ptr'
     // read in elements
     for (int i = 0; i < size; i++) {
         cout << "Enter value " << i << ": ";
-        cin >> ptr_arr[i];	// assign inputted value to array (array notation)
+        cin >> array_ptr[i];	// assign inputted value to array (array notation)
     }
 
     // we can use the access modifier "[]" to treat a pointer as an array
     // - using array notation to access the elements
     cout << "Array elements:" << endl;
     for (int i = 0; i < size; i++)
-        cout << ptr_arr[i] << endl;
+        cout << array_ptr[i] << endl;
 
-    display_using_array_notation(ptr_arr, size);	// pass address of array (memory block)
+    display_using_array_notation(array_ptr, size);	// pass address of array (memory block)
 
-    display_using_pointer_notation(ptr_arr, size);
+    display_using_pointer_notation(array_ptr, size);
 
     //TODO
     // Write and call 2 functions:
-    // increase_using_pointer_notation(ptr_arr,size);
-    // increase_using_array_notation(ptr_arr, size);
+    // increase_using_pointer_notation(array_ptr,size);
+    // increase_using_array_notation(array_ptr, size);
     // that will increase the value of each element by 2;
     //
     // run and test
@@ -230,8 +231,8 @@ void demo3()
     // Note the "[]" is ESSENTIAL, as - if we leave it out - only the first int in the
     // array will be freed up, which would lead to memory leakage.
 
-    delete [] ptr_arr;	// free up the dynamic array of int
-    ptr_arr = nullptr;  // set to null to  prevent dangling pointer 
+    delete [] array_ptr;	// free up the dynamic array of int
+    array_ptr = nullptr;  // set to null to  prevent dangling pointer
 
     cout << "Leaving demo3() - Memory has been freed up using delete []" << endl;
 }
