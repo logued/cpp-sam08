@@ -1,9 +1,9 @@
-// Dynamic_Memory_Allocation_Basics			Feb 2022
+// Dynamic_Memory_Allocation_Basics			Feb 2023
 //
 // Demonstrates
 // - using "new" to allocate dynamic memory from the Heap
-// - using "delete" and "delete[]" to free up allocated memory
-// - dynamic allocation of an array of elements
+// - using "delete" to free up allocated memory
+// - dynamic allocation and deletion of an array of elements
 //
 
 #include <iostream>
@@ -45,9 +45,10 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
      (where, incidentally, all objects are stored in Java).
      We allocate memory using the keyword 'new', which basically requests a block of memory
      of the specified size.
-     When finished, we must/should 'free up' the block of memory using the keyword 'delete'.
+     When finished, we should 'free up' the block of memory using the keyword 'delete'.
      When we call 'delete', the  memory isn't actually deleted, but rather, the memory block
-     is freed-up (i.e. given back to the system so that it can be used again).
+     is freed-up (i.e. given back to the system so that it can be used again). If we forget
+     to delete the memory, it can no longer be accessed by the system.
 
      Dynamically allocated memory MUST be accessed using a pointer
      (a pointer that can be assigned the address of the memory block allocated from the Heap)
@@ -59,6 +60,7 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
      (i.e. the programmer forgets to write the code to delete the memory block)
 
      Modern C++ provides many features that reduce the need to use DMA- we may examine some of them.
+     Ther are: Smart Pointers and RAII techniques. (see later in course)
 
      Finally, an example .....
 
@@ -115,10 +117,11 @@ void demo1()  // Dynamic Memory Allocation (DMA) (memory allocated form the 'Hea
 //TODO in class:
 //    Allocate dynamic memory to store the time (UNIX time) in an unsigned long integer value.
 //    Declare and add the address of the memory in a pointer called  time_ptr ("pointer to time")
-//    Assign the value 1234567890 to the memory block using the (de-referenced) pointer.
+//    Assign the value 1675723456 to the memory block using the (de-referenced) pointer.
 //    Output the time value using the pointer (de-reference it)
 //    Increment the time value by 1 (second) using the pointer.
 //    Output the new value.
+// Look up:  https://time.is/Unix_time
 //
 //    ...finish up
 //    .. oops, did we forget something? Yes we did!!!
@@ -146,12 +149,13 @@ void demo2()  // using the NULL pointer "nullptr"  (Good Practice)
 
     // When we have finished using a pointer, and we wish to indicate that we no longer
     // want the pointer to point at an object, then we assign the value 'nullptr' to the pointer.
-    // This helps ensure that we don't use the pointer by mistake (i.e. as a dangling pointer)
+    // This helps ensure that we don't subsequently use the pointer by mistake (i.e. as a dangling pointer)
     // nullptr can be assigned only to pointer type variables as it is a special value.
     // It is also good practice to assign nullptr to pointers that do not yet point at an object,
     // as well as pointers that we are finished using.
 
     delete p;		// free up memory pointed at by p
+
     //cout << "After deleting p, *p = " << *p << endl;  // causes crash or possibly unnoticed error
 
     p = nullptr;	// setting pointer to nullptr prevents us from mistakenly using it after delete
@@ -179,12 +183,12 @@ void display_using_array_notation( int array[], int size )
         cout << array[i] << endl;
 }
 
-void display_using_pointer_notation( int* array_ptr, int size )
+void display_using_pointer_notation( int* ptr, int size )
 {
     cout << "display using pointer notation:" << endl;
     for (int i = 0; i < size; i++) {
-        cout << *array_ptr << endl;
-        array_ptr++;	// increment the pointer (move on by one element)
+        cout << *ptr << endl;
+        ptr++;	// increment the pointer (move on by one element)
     }
 }
 
@@ -227,7 +231,7 @@ void demo3()
     // Note the "[]" is ESSENTIAL, as - if we leave it out - only the first int in the
     // array will be freed up, which would lead to memory leakage.
 
-    delete [] array_ptr;	// free up the dynamic array of int, note the "[]"
+    delete [] array_ptr;	// free up the dynamic array of int, note the "[]" is required.
     array_ptr = nullptr;    // set to nullptr;  to prevent a dangling pointer
 
     cout << "Leaving demo3() - Memory has been freed up using delete []" << endl;
